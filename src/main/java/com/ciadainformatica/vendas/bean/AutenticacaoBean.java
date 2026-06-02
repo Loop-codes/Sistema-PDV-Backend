@@ -1,11 +1,11 @@
 package com.ciadainformatica.vendas.bean;
 
 import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
+import com.ciadainformatica.vendas.security.JwtService;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 
@@ -13,67 +13,85 @@ import com.ciadainformatica.vendas.dao.UsuarioDAO;
 import com.ciadainformatica.vendas.domain.Pessoa;
 import com.ciadainformatica.vendas.domain.Usuario;
 
-
 @ManagedBean
 @SessionScoped
 public class AutenticacaoBean {
-	private Usuario usuario;
-	private Usuario usuarioLogado;
+    private Usuario usuario;
+    private Usuario usuarioLogado;
+    private String token;
 
-	public Usuario getUsuario() {
-		return usuario;
-	}
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-	
-	public Usuario getUsuarioLogado() {
-		return usuarioLogado;
-	}
-	
-	public void setUsuarioLogado(Usuario usuarioLogado) {
-		this.usuarioLogado = usuarioLogado;
-	}
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-	@PostConstruct
-	public void iniciar() {
-		usuario = new Usuario();
-		usuario.setPessoa(new Pessoa());
-	}
+    public Usuario getUsuarioLogado() {
+        return usuarioLogado;
+    }
 
-	public void autenticar() {
-		try {
-			UsuarioDAO usuarioDAO = new UsuarioDAO();
-			usuarioLogado = usuarioDAO.autenticar(usuario.getPessoa().getCpf(), usuario.getSenha());
-			
-			if(usuarioLogado == null){
-				Messages.addGlobalError("CPF e/ou senha incorretos");
-				return;
-			}
-			
-			Faces.redirect("./pages/inicio.xhtml");
-		} catch (IOException erro) {
-			erro.printStackTrace();
-			Messages.addGlobalError(erro.getMessage());
-		}
-	}
-	
-	public void sair(){	
+    public void setUsuarioLogado(Usuario usuarioLogado) {
+        this.usuarioLogado = usuarioLogado;
+    }
 
-		
-		try {
-			System.out.println("entrou");
-			usuario = new Usuario();
-			usuario.setPessoa(new Pessoa());
-			
-			usuarioLogado = usuario;
-			Faces.setSessionAttribute("autenticacaoBean", null);
-			Faces.redirect("./pages/autenticacao.xhtml");
+    public String getToken() {
+        return token;
+    }
 
-		} catch (IOException erro) {
-			erro.printStackTrace();
-			Messages.addGlobalError(erro.getMessage());
-		}
-	}
+    @PostConstruct
+    public void iniciar() {
+        usuario = new Usuario();
+        usuario.setPessoa(new Pessoa());
+    }
+
+    public void autenticar() {
+        try {
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            usuarioLogado = usuarioDAO.autenticar(usuario.getPessoa().getCpf(), usuario.getSenha());
+
+            if (usuarioLogado == null) {
+                Messages.addGlobalError("CPF e/ou senha incorretos");
+                return;
+            }
+
+            if (!usuarioLogado.getAtivo()) {
+                Messages.addGlobalError("Usuário inativo");
+                return;
+            }
+
+            // Gerar JWT
+            try {
+                token = JwtService.generateToken(usuarioLogado);
+            } catch (Exception e) {
+                Messages.addGlobalError("Erro ao gerar token: " + e.getMessage());
+                return;
+            }
+
+            // Armazenar na sessão
+            Faces.getSession().setAttribute("jwt_token", token);
+            Faces.getSession().setAttribute("usuarioLogado", usuarioLogado);
+
+            Faces.redirect("./pages/principal.xhtml");
+        } catch (IOException erro) {
+            erro.printStackTrace();
+            Messages.addGlobalError("Erro ao autenticar: " + erro.getMessage());
+        }
+    }
+
+    public void sair() {
+        try {
+            usuario = new Usuario();
+            usuario.setPessoa(new Pessoa());
+            usuarioLogado = null;
+            token = null;
+
+            Faces.getSession().invalidate();
+            Faces.redirect("./pages/autenticacao.xhtml");
+        } catch (IOException erro) {
+            erro.printStackTrace();
+            Messages.addGlobalError(erro.getMessage());
+        }
+    }
 }
