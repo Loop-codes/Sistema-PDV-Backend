@@ -1,13 +1,11 @@
 package com.ciadainformatica.vendas.domain;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @SuppressWarnings("serial")// ignora warnings deste tipo
 @Entity// é uma entidade hibernate, é uma tabela
@@ -22,7 +20,9 @@ public class Venda extends GenericDomain{
 	
 	@ManyToOne
 	private Cliente cliente;
-		
+
+    @OneToMany(mappedBy = "venda", fetch = FetchType.LAZY)
+    private List<ItemVenda> itens = new ArrayList<>();
 	
 	public Date getHorario() {
 		return horario;
@@ -48,7 +48,11 @@ public class Venda extends GenericDomain{
 		this.cliente = cliente;
 	}
 
-	
-	
+    public List<ItemVenda> getItens() {
+        return itens;
+    }
 
+    public void setItens(List<ItemVenda> itens) {
+        this.itens = itens;
+    }
 }

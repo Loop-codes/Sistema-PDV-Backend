@@ -24,12 +24,18 @@ public class Produto extends GenericDomain{
 	@Column(nullable = false, precision = 6, scale = 2)// diz: não poderá ser nulo, terá até 6 algarismos numericos sendo que 2 são após a virgula
 	private BigDecimal preco;
 	
-	@ManyToOne//diz: que varios produtos poderão ter apensas um fabricante, fabricante é a chave estrangeira de produto
+	@ManyToOne//diz: que varios produtos poderão ter apenas um fabricante, fabricante é a chave estrangeira de produto
 	@JoinColumn(nullable = false)
 	private Fabricante fabricante;
 
-	
-	//gets e seters
+    @Column(name = "estoque_atual", nullable = false, columnDefinition = "integer check (estoque_atual >= 0)")
+    private Integer estoqueAtual;
+
+    @Column(name = "estoque_minimo", nullable = false)
+    private Integer estoqueMinimo;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
 	
 	
 	public String getDescricao() {
@@ -44,30 +50,42 @@ public class Produto extends GenericDomain{
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-
-	
 	public Short getQuantidade() {
 		return quantidade;
 	}
 	public void setQuantidade(Short quantidade) {
 		this.quantidade = quantidade;
 	}
-
-	
 	public BigDecimal getPreco() {
 		return preco;
 	}
 	public void setPreco(BigDecimal preco) {
 		this.preco = preco;
 	}
-
-	
 	public Fabricante getFabricante() {
 		return fabricante;
 	}
 	public void setFabricante(Fabricante fabricante) {
 		this.fabricante = fabricante;
 	}
-	
-	
+    public Integer getEstoqueAtual() {
+        return estoqueAtual;
+    }
+    public void setEstoqueAtual(Integer estoqueAtual) {
+        this.estoqueAtual = estoqueAtual;
+    }
+    public Integer getEstoqueMinimo() {
+        return estoqueMinimo;
+    }
+    public void setEstoqueMinimo(Integer estoqueMinimo) {
+        this.estoqueMinimo = estoqueMinimo;
+    }
+    public Boolean getAtivo() {
+        return ativo;
+    }
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+
 }

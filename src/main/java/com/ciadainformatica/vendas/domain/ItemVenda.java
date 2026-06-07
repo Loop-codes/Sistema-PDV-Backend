@@ -19,7 +19,7 @@ public class ItemVenda extends GenericDomain{
 	@Column(nullable = false)
 	private BigDecimal valorParcial;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(nullable = false)
 	private Produto produto;
 	
