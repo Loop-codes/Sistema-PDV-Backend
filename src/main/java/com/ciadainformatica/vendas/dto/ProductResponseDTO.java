@@ -1,5 +1,7 @@
 package com.ciadainformatica.vendas.dto;
 
+import com.ciadainformatica.vendas.domain.Produto;
+
 import java.math.BigDecimal;
 
 public class ProductResponseDTO {
@@ -9,11 +11,11 @@ public class ProductResponseDTO {
     private BigDecimal preco;
     private Integer estoqueAtual;
 
-    public ProductResponseDTO(Long id, String nome, BigDecimal preco, Integer estoqueAtual) {
-        this.id = id;
-        this.nome = nome;
-        this.preco = preco;
-        this.estoqueAtual = estoqueAtual;
+    public ProductResponseDTO(Produto produto) {
+        this.id = produto.getCodigo();
+        this.nome = produto.getDescricao();
+        this.preco = produto.getPreco();
+        this.estoqueAtual = produto.getEstoqueAtual();
     }
 
     public Long getId() {

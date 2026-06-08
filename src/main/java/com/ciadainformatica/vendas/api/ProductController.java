@@ -6,13 +6,11 @@ import com.ciadainformatica.vendas.service.ProdutoService;
 import com.ciadainformatica.vendas.domain.Produto;
 import jakarta.validation.Valid;
 
-import javax.transaction.Status;
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.ResourceBundle;
+
 
 @Path("/produtos")
 @Produces(MediaType.APPLICATION_JSON)

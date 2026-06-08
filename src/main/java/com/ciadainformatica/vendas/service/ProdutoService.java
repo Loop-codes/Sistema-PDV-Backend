@@ -10,7 +10,15 @@ import java.util.stream.Collectors;
 
 public class ProdutoService {
 
-    private ProdutoDAO produtoDAO = new ProdutoDAO();
+    private ProdutoDAO produtoDAO;
+
+    public ProdutoService(ProdutoDAO produtoDAO) {
+        this.produtoDAO = produtoDAO;
+    }
+
+    public ProdutoService() {
+        this.produtoDAO = new ProdutoDAO();
+    }
 
     public Produto cadastrarProduto(ProductRequestDTO dto) {
         Produto produto = new Produto();
@@ -25,7 +33,7 @@ public class ProdutoService {
         return produto;
     }
 
-    private List<ProductResponseDTO> listarProdutosAtivos(){
+    public List<ProductResponseDTO> listarProdutosAtivos(){
         List<Produto> todos = produtoDAO.listar();
 
         return todos.stream()
@@ -61,5 +69,4 @@ public class ProdutoService {
         produto.setAtivo(false);
         produtoDAO.editar(produto);
     }
-}
 }
